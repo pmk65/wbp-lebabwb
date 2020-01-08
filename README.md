@@ -16,7 +16,7 @@ Integrates Lebab into WeBuilder with GUI panel.
 
 Plugin creates a Docking panel with 2 Tabs.
  * The 1st Tab allows you to configure/apply the Lebab transpile options you want to apply to the current document or selection.
- * The 2nd Tab allows you to quick transpile the current document or selectio using a single Lebab option.
+ * The 2nd Tab allows you to quick transpile the current document or selection using a single Lebab option.
 
 
 #### Installation:
