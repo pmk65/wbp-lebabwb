@@ -15,8 +15,9 @@ Integrates Lebab into WeBuilder with GUI panel.
  * Lebab turn your ES5 code into readable ES6/ES7 <https://github.com/lebab/>
 
 Plugin creates a Docking panel with 2 Tabs.
- * The 1st Tab allows you to configure the combination of the Lebab transpile options you want to apply to the current document or selection.
+ * The 1st Tab allows you to configure the combination of the Lebab transpile options you want to apply to the current document or selection.<br>The config options set here, are also used if you choose the menu item "Lebab -> Transpile"
  * The 2nd Tab allows you to quick transpile the current document or selection using a single Lebab option.
+ * Plugin also have 2 menu items: "Transpile" (uses the config options set in the docking panel) and "Toggle Lebab Dock"
 
 ![Screenshot](https://i.imgur.com/DTgfHa1.png)
 
