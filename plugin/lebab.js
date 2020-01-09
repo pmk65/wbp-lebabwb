@@ -9,35 +9,35 @@
  * @author    Peter Klein <pmk@io.dk>
  * @copyright 2020 Peter Klein
  * @license   http://www.freebsd.org/copyright/license.html  BSD License
- * @version   1.0
+ * @version   1.0.1
  */
 
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
- *     60   function OnReady()
- *     76   function OnDisabled()
- *     89   function OnExit()
- *    101   function ToggleDock(Sender)
- *    116   function D(val)
- *    128   function CreateTabPanel(parent, caption)
- *    143   function CreateDockingPanel()
+ *     61   function OnReady()
+ *     77   function OnDisabled()
+ *     90   function OnExit()
+ *    102   function ToggleDock(Sender)
+ *    117   function D(val)
+ *    129   function CreateTabPanel(parent, caption)
+ *    144   function CreateDockingPanel()
  *    330   function CreateCheckBox(parent, caption, hint, tagId, tabOrder, left, top)
  *    359   function CreateTranspileButton(parent, caption, tagId, left, top)
  *    384   function SaveCheckboxState(Sender)
  *    397   function GetSettings(tagId)
  *    419   function StartTranspiling(Sender)
- *    483   function InstallGlobalNodeModule(module)
- *    493   function GetEditorData()
- *    516   function SelectTagBlock(tag)
- *    562   function DisplayWarnings(text, editorStartLine)
- *    577   function ScaleImage(NewWidth, NewHeight)
- *    605   function FileGetContents(filename)
- *    625   function FilePutContents(filename, contents)
- *    645   function DeleteFile(file, force)
- *    661   function ExpandEnviromentVariable(path)
- *    673   function GetTempFileName(ext)
- *    684   function OnInstalled()
+ *    482   function InstallGlobalNodeModule(module)
+ *    492   function GetEditorData()
+ *    515   function SelectTagBlock(tag)
+ *    561   function DisplayWarnings(text, editorStartLine)
+ *    581   function GetNodePath()
+ *    598   function FileGetContents(filename)
+ *    618   function FilePutContents(filename, contents)
+ *    638   function DeleteFile(file, force)
+ *    654   function ExpandEnviromentVariable(path)
+ *    666   function GetTempFileName(ext)
+ *    677   function OnInstalled()
  *
  * TOTAL FUNCTIONS: 23
  * (This index is automatically created/updated by the WeBuilder plugin "DocBlock Comments")
@@ -51,6 +51,7 @@
 var dockPanel;
 var mainForm = null;
 var tagList = ["arrow", "arrow-return", "for-of", "for-each", "arg-rest", "arg-spread", "obj-method", "obj-shorthand", "no-strict", "exponent", "multi-var", "let", "class", "commonjs", "template", "default-param", "destruct-param", "includes", "arrow,arrow-return,for-of,for-each,arg-rest,arg-spread,obj-method,obj-shorthand,no-strict,exponent,multi-var,let,class,commonjs,template,default-param,destruct-param,includes"];
+var nodePath = GetNodePath();
 
 /**
  * Fired after IDE has finished startup initialization or plugin has been just enabled after disabling.
@@ -252,7 +253,6 @@ function CreateDockingPanel() {
   "The resulting code should be almost 100% equivalent of the original code.";
   headerLabel.SetBounds(padding, padding, mainForm.Canvas.TextWidth(headerLabel.Caption), mainForm.Canvas.TextHeight("hj"));
 
-
   button = CreateTranspileButton(tabPanel2, "arrow ", 0, padding + margin, headerLabel.Top + headerLabel.Height + padding);
 
   button = CreateTranspileButton(tabPanel2, "arrow-return", 1, padding + margin, button.Top + button.Height + padding);
@@ -399,7 +399,7 @@ function GetSettings(tagId) {
   if (tagId < Length(tagList)) settings = tagList[tagId];
   else {
     var ini = new TIniFile(Script.Path + "lebab_settings.ini");
-    for (var i = 0; i < Length(tagList); i++) {
+    for (var i = 0; i < Length(tagList) - 1; i++) {
       if (ini.ReadBool("Lebab", tagList[i], true)) settings += tagList[i] + ",";
     }
     if (settings != "") settings = Copy(settings, 0, Length(settings) - 1);
@@ -417,7 +417,6 @@ function GetSettings(tagId) {
  * @return void
  */
 function StartTranspiling(Sender) {
-
   var data = GetEditorData();
   if (Length(data) == 3) {
     var editorData = data[0], editorStartLine = data[1], editorDataType = data[2];
@@ -434,7 +433,7 @@ function StartTranspiling(Sender) {
 
     // If file exists (saved correctly), then we run Lebab
     if (FileExists(workFileName)) {
-      var cmd = ExpandEnviromentVariable("%USERPROFILE%\\AppData\\Roaming\\npm\\lebab.cmd"), tagId;
+      var cmd = nodePath + "\\lebab.cmd", tagId;
       if (!FileExists(cmd)) {
         // Lebab module not found
         if (Confirm("Lebab module not found. Install it?")) InstallGlobalNodeModule("lebab");
@@ -482,7 +481,7 @@ function StartTranspiling(Sender) {
  */
 function InstallGlobalNodeModule(module) {
   var WSH = CreateOleObject("WScript.Shell");
-  WSH.run("cmd.exe /C \"" + ExpandEnviromentVariable("%USERPROFILE%\\AppData\\Roaming\\npm\\npm.cmd") + " install " + module + " -g & pause\"", 1, 1);
+  WSH.run("cmd.exe /C \"" + nodePath + "\\npm.cmd install " + module + " -g & pause\"", 1, 1);
 }
 
 /**
@@ -574,25 +573,19 @@ function DisplayWarnings(text, editorStartLine) {
 
 }
 
-function ScaleImage(NewWidth, NewHeight) {
-
-    var bitmap1 = new TBitmap;
-    bitmap1.Create;
-    bitmap1.LoadFromFile(Script.Path + "lebab256.bmp");
-
-    var bitmap2 = new TBitmap;
-    bitmap2.Create;
-    bitmap2.Canvas.Brush.Style = bsSolid;
-    bitmap2.Canvas.Brush.Color = clBtnFace;
-    bitmap2.Canvas.Pen.Color = clBtnFace;
-    bitmap2.Width = NewWidth;
-    bitmap2.Height = NewHeight;
-    bitmap2.Canvas.StretchDraw(0, 0, NewWidth, NewHeight, bitmap1);
-    bitmap1.Width = NewWidth;
-    bitmap1.Height = NewHeight;
-    bitmap1.Canvas.Draw(0, 0, bitmap2);
-    bitmap2.Free;
-    return bitmap1;
+/**
+ * Get the path to nodejs package manager (npm)
+ *
+ * @return string
+ */
+function GetNodePath() {
+  var output, path = ExpandEnviromentVariable("%USERPROFILE%\\AppData\\Roaming\\npm"); // Default path
+  // Run the DOS command "path" to get list of available paths
+  if (ExecuteCommand("cmd.exe /C path", output)) {
+    output = RegexMatch(output, "([^;]*npm)(?:;|$|\\r|\\n)", true);
+    if (DirectoryExists(output)) path = output;
+  }
+  return path;
 }
 
 /**
