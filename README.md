@@ -22,6 +22,6 @@ Plugin creates a Docking panel with 2 Tabs.
 You need Nodejs installed on your system in order to use this plugin. <https://nodejs.org/en/>
 
 #### Installation:
-1) Download repository as a .ZIP file.
+1) Download the "plugin" folder from this repository using this [link](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/pmk65/wbp-lebabwb/tree/master/plugin&fileName=lebabwb&rootDirectory=false) (If you download the repository directly, you need to manually create a zip archive containing the files inside the "plugin" folder.)
 2) Open editor and select "Plugins -> Manage Plugins" from the menu.
 3) Click "Install" and select the .ZIP file you downloaded in step 1.
